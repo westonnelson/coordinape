@@ -28,8 +28,14 @@ export default function DepositModal({
 }) {
   const [max, setMax] = useState<any>();
   const contracts = useContracts();
-  (window as any).contracts = contracts;
+
   const [selectedContracts, setSelectedContracts] = useState<Contracts>();
+
+  useEffect(() => {
+    // this is in useEffect because it uses window, so this can only run on client side -g
+    // FIXME: should this merge with other useEffect and use the if(contracts) check? previous impl did not, and did not ever re-set this -g
+    (window as any).contracts = contracts;
+  }, []);
 
   useEffect(() => {
     if (contracts) setSelectedContracts(contracts);
@@ -39,6 +45,7 @@ export default function DepositModal({
     assert(contracts);
     const newContracts = new Contracts(contracts.chainId, provider);
     setSelectedContracts(newContracts);
+    // we have a web3 provider here so we can assume client side and that window is available -g
     (window as any).contracts = newContracts;
   };
 
