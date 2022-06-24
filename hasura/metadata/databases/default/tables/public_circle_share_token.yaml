@@ -1,0 +1,53 @@
+table:
+  name: circle_share_token
+  schema: public
+object_relationships:
+- name: circle
+  using:
+    foreign_key_constraint_on: circle_id
+insert_permissions:
+- permission:
+    backend_only: false
+    check:
+      circle:
+        users:
+          _and:
+          - profile:
+              id:
+                _eq: X-Hasura-User-Id
+          - role:
+              _eq: 1
+    columns:
+    - circle_id
+    - type
+  role: user
+select_permissions:
+- permission:
+    columns:
+    - circle_id
+    - type
+    - created_at
+    - updated_at
+    - uuid
+    filter:
+      circle:
+        users:
+          _and:
+          - profile:
+              id:
+                _eq: X-Hasura-User-Id
+          - role:
+              _eq: 1
+  role: user
+delete_permissions:
+- permission:
+    filter:
+      circle:
+        users:
+          _and:
+          - profile:
+              id:
+                _eq: X-Hasura-User-Id
+          - role:
+              _eq: 1
+  role: user

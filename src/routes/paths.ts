@@ -38,6 +38,7 @@ const withSearchParams = (
 export const paths = {
   // circle-specific
   members: (circleId: number) => `/circles/${circleId}/members`,
+  membersAdd: (circleId: number) => `/circles/${circleId}/members/add`,
   circleAdmin: (circleId: number) => `/circles/${circleId}/admin`,
   circleAdminApi: (circleId: number) => `/circles/${circleId}/admin/api`,
   allocation: (circleId: number) => `/circles/${circleId}/allocation`,
@@ -63,6 +64,10 @@ export const paths = {
   profile: (address: string) => `/profile/${address}`,
   vaults: '/vaults',
   vaultTxs: (id: string) => `${paths.vaults}/${id}/txs`,
+
+  // for circle links
+  invite: (token: string) => `/invite/${token}`,
+  join: (token: string) => `/join/${token}`,
 };
 
 export const isCircleSpecificPath = (location: Location) =>

@@ -23,6 +23,10 @@ type Mutation {
 }
 
 type Mutation {
+  createUserWithToken(payload: CreateUserWithTokenInput!): UserResponse
+}
+
+type Mutation {
   createUsers(payload: CreateUsersInput!): [UserResponse]
 }
 
@@ -276,6 +280,16 @@ input LogVaultTxInput {
   circle_id: Int
 }
 
+input CircleLandingInfoInput {
+  token: String!
+}
+
+input CreateUserWithTokenInput {
+  username: String!
+  address: String!
+  token: String!
+}
+
 type CreateCircleResponse {
   id: Int!
 }
@@ -347,6 +361,12 @@ type UpdateOrgResponse {
 
 type LogVaultTxResponse {
   id: ID!
+}
+
+type CircleLandingInfoResponse {
+  circle_id: Int!
+  name: String!
+  logo: String!
 }
 
 scalar timestamptz
