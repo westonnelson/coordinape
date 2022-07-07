@@ -3494,6 +3494,8 @@ columns and relationships of "circle_api_keys" */
     id?: boolean | `@${string}`;
     index?: boolean | `@${string}`;
     new_amount?: boolean | `@${string}`;
+    /** An object relationship */
+    profile?: ValueTypes['profiles'];
     profile_id?: boolean | `@${string}`;
     proof?: boolean | `@${string}`;
     txHash?: boolean | `@${string}`;
@@ -3579,6 +3581,7 @@ columns and relationships of "circle_api_keys" */
     id?: ValueTypes['bigint_comparison_exp'] | undefined | null;
     index?: ValueTypes['bigint_comparison_exp'] | undefined | null;
     new_amount?: ValueTypes['numeric_comparison_exp'] | undefined | null;
+    profile?: ValueTypes['profiles_bool_exp'] | undefined | null;
     profile_id?: ValueTypes['bigint_comparison_exp'] | undefined | null;
     proof?: ValueTypes['String_comparison_exp'] | undefined | null;
     txHash?: ValueTypes['String_comparison_exp'] | undefined | null;
@@ -3608,6 +3611,7 @@ columns and relationships of "circle_api_keys" */
     id?: ValueTypes['bigint'] | undefined | null;
     index?: ValueTypes['bigint'] | undefined | null;
     new_amount?: ValueTypes['numeric'] | undefined | null;
+    profile?: ValueTypes['profiles_obj_rel_insert_input'] | undefined | null;
     profile_id?: ValueTypes['bigint'] | undefined | null;
     proof?: string | undefined | null;
     txHash?: string | undefined | null;
@@ -3695,6 +3699,7 @@ columns and relationships of "circle_api_keys" */
     id?: ValueTypes['order_by'] | undefined | null;
     index?: ValueTypes['order_by'] | undefined | null;
     new_amount?: ValueTypes['order_by'] | undefined | null;
+    profile?: ValueTypes['profiles_order_by'] | undefined | null;
     profile_id?: ValueTypes['order_by'] | undefined | null;
     proof?: ValueTypes['order_by'] | undefined | null;
     txHash?: ValueTypes['order_by'] | undefined | null;
@@ -15834,6 +15839,8 @@ columns and relationships of "circle_api_keys" */
     id: GraphQLTypes['bigint'];
     index: GraphQLTypes['bigint'];
     new_amount: GraphQLTypes['numeric'];
+    /** An object relationship */
+    profile?: GraphQLTypes['profiles'] | undefined;
     profile_id: GraphQLTypes['bigint'];
     proof: string;
     txHash?: string | undefined;
@@ -22029,6 +22036,8 @@ columns and relationships of "circle_api_keys" */
     id: GraphQLTypes['bigint'];
     index: GraphQLTypes['bigint'];
     new_amount: GraphQLTypes['numeric'];
+    /** An object relationship */
+    profile?: GraphQLTypes['profiles'] | undefined;
     profile_id: GraphQLTypes['bigint'];
     proof: string;
     txHash?: string | undefined;
@@ -22107,6 +22116,7 @@ columns and relationships of "circle_api_keys" */
     id?: GraphQLTypes['bigint_comparison_exp'] | undefined;
     index?: GraphQLTypes['bigint_comparison_exp'] | undefined;
     new_amount?: GraphQLTypes['numeric_comparison_exp'] | undefined;
+    profile?: GraphQLTypes['profiles_bool_exp'] | undefined;
     profile_id?: GraphQLTypes['bigint_comparison_exp'] | undefined;
     proof?: GraphQLTypes['String_comparison_exp'] | undefined;
     txHash?: GraphQLTypes['String_comparison_exp'] | undefined;
@@ -22135,6 +22145,7 @@ columns and relationships of "circle_api_keys" */
     id?: GraphQLTypes['bigint'] | undefined;
     index?: GraphQLTypes['bigint'] | undefined;
     new_amount?: GraphQLTypes['numeric'] | undefined;
+    profile?: GraphQLTypes['profiles_obj_rel_insert_input'] | undefined;
     profile_id?: GraphQLTypes['bigint'] | undefined;
     proof?: string | undefined;
     txHash?: string | undefined;
@@ -22222,6 +22233,7 @@ columns and relationships of "circle_api_keys" */
     id?: GraphQLTypes['order_by'] | undefined;
     index?: GraphQLTypes['order_by'] | undefined;
     new_amount?: GraphQLTypes['order_by'] | undefined;
+    profile?: GraphQLTypes['profiles_order_by'] | undefined;
     profile_id?: GraphQLTypes['order_by'] | undefined;
     proof?: GraphQLTypes['order_by'] | undefined;
     txHash?: GraphQLTypes['order_by'] | undefined;
