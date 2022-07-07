@@ -711,6 +711,10 @@ export type ValueTypes = {
     role?: number | undefined | null;
     starting_tokens?: number | undefined | null;
   };
+  ['CreateUserWithTokenInput']: {
+    name: string;
+    token: string;
+  };
   ['CreateUsersInput']: {
     circle_id: number;
     users: Array<ValueTypes['UserObj'] | undefined | null>;
@@ -3342,6 +3346,10 @@ columns and relationships of "distributions" */
     ];
     createUser?: [
       { payload: ValueTypes['CreateUserInput'] },
+      ValueTypes['UserResponse']
+    ];
+    createUserWithToken?: [
+      { payload: ValueTypes['CreateUserWithTokenInput'] },
       ValueTypes['UserResponse']
     ];
     createUsers?: [
@@ -7583,6 +7591,7 @@ export type ModelTypes = {
     nominee: GraphQLTypes['nominees'];
   };
   ['CreateUserInput']: GraphQLTypes['CreateUserInput'];
+  ['CreateUserWithTokenInput']: GraphQLTypes['CreateUserWithTokenInput'];
   ['CreateUsersInput']: GraphQLTypes['CreateUsersInput'];
   ['CreateVaultInput']: GraphQLTypes['CreateVaultInput'];
   ['DeleteEpochInput']: GraphQLTypes['DeleteEpochInput'];
@@ -8452,6 +8461,7 @@ columns and relationships of "distributions" */
     createEpoch?: GraphQLTypes['EpochResponse'] | undefined;
     createNominee?: GraphQLTypes['CreateNomineeResponse'] | undefined;
     createUser?: GraphQLTypes['UserResponse'] | undefined;
+    createUserWithToken?: GraphQLTypes['UserResponse'] | undefined;
     createUsers?: Array<GraphQLTypes['UserResponse'] | undefined> | undefined;
     createVault?: GraphQLTypes['VaultResponse'] | undefined;
     /** Log offchain information for vault transactions */
@@ -9684,6 +9694,10 @@ export type GraphQLTypes = {
     non_receiver?: boolean | undefined;
     role?: number | undefined;
     starting_tokens?: number | undefined;
+  };
+  ['CreateUserWithTokenInput']: {
+    name: string;
+    token: string;
   };
   ['CreateUsersInput']: {
     circle_id: number;
@@ -11798,6 +11812,7 @@ columns and relationships of "distributions" */
     createEpoch?: GraphQLTypes['EpochResponse'] | undefined;
     createNominee?: GraphQLTypes['CreateNomineeResponse'] | undefined;
     createUser?: GraphQLTypes['UserResponse'] | undefined;
+    createUserWithToken?: GraphQLTypes['UserResponse'] | undefined;
     createUsers?: Array<GraphQLTypes['UserResponse'] | undefined> | undefined;
     createVault?: GraphQLTypes['VaultResponse'] | undefined;
     /** Log offchain information for vault transactions */

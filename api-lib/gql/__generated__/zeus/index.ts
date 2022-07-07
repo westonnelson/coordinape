@@ -737,9 +737,8 @@ export type ValueTypes = {
     starting_tokens?: number | undefined | null;
   };
   ['CreateUserWithTokenInput']: {
-    address: string;
+    name: string;
     token: string;
-    username: string;
   };
   ['CreateUsersInput']: {
     circle_id: number;
@@ -19811,9 +19810,8 @@ export type GraphQLTypes = {
     starting_tokens?: number | undefined;
   };
   ['CreateUserWithTokenInput']: {
-    address: string;
+    name: string;
     token: string;
-    username: string;
   };
   ['CreateUsersInput']: {
     circle_id: number;

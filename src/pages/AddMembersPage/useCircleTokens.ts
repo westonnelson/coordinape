@@ -2,12 +2,8 @@ import assert from 'assert';
 
 import { useQuery } from 'react-query';
 
+import { CircleTokenType } from '../../common-lib/circleShareTokens';
 import { client } from '../../lib/gql/client';
-
-export enum CircleTokenType {
-  Welcome = 0,
-  Magic,
-}
 
 export const useMagicToken = (circleId: number) => {
   return useCircleTokens(circleId, CircleTokenType.Magic);

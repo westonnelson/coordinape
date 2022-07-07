@@ -285,8 +285,7 @@ input CircleLandingInfoInput {
 }
 
 input CreateUserWithTokenInput {
-  username: String!
-  address: String!
+  name: String!
   token: String!
 }
 
