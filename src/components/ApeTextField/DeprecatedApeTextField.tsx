@@ -34,7 +34,7 @@ interface ApeTextStyleProps {
 // with the the calendar.
 export type ApeTextFieldProps = TextFieldProps & ApeTextStyleProps;
 
-export const ApeTextField = ({
+export const DeprecatedApeTextField = ({
   infoTooltip,
   subtitle,
   apeVariant = 'default',

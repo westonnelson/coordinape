@@ -12,7 +12,7 @@ import { FormControl, MenuItem, Select } from '@material-ui/core';
 
 import { paths } from '../../routes/paths';
 import { IUser } from '../../types';
-import { LoadingModal, ApeTextField } from 'components';
+import { LoadingModal, DeprecatedApeTextField } from 'components';
 import { useApeSnackbar, useContracts } from 'hooks';
 import { Box, Button, Text } from 'ui';
 
@@ -356,7 +356,7 @@ export function DistributionForm({
                 field: { onChange, value },
                 fieldState: { error },
               }) => (
-                <ApeTextField
+                <DeprecatedApeTextField
                   type="number"
                   error={!!error}
                   helperText={error ? error.message : null}
@@ -480,7 +480,7 @@ export function DistributionForm({
                   name={'amount'}
                   control={control}
                   render={({ fieldState: { error } }) => (
-                    <ApeTextField
+                    <DeprecatedApeTextField
                       type="number"
                       error={!!error}
                       helperText={error ? error.message : null}
