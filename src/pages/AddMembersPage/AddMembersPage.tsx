@@ -1,21 +1,29 @@
-import React, { ReactNode, useState } from 'react';
-
-import copy from 'copy-to-clipboard';
-
+/* eslint-disable */
+import React, { useEffect, useState } from 'react';
 import { LoadingModal } from '../../components';
-import { useApeSnackbar } from '../../hooks';
 import { Box } from '../../ui/Box/Box';
-import { ExternalLinkIcon } from '../../ui/icons/ExternalLinkIcon';
 import { useSelectedCircle } from 'recoilState/app';
 import { Button, Flex, Panel, Text, TextField } from 'ui';
 import { SingleColumnLayout } from 'ui/layouts';
-
 import {
   deleteMagicToken,
   deleteWelcomeToken,
   useMagicToken,
   useWelcomeToken,
 } from './useCircleTokens';
+import { ICircle } from '../../types';
+import EthAndNameEntry from './NewMemberEntry';
+import CopyCodeTextField from './CopyCodeTextField';
+import TabButton, { Tab } from './TabButton';
+import NewMemberList from './NewMemberList';
+import { client } from '../../lib/gql/client';
+import { useApeSnackbar } from '../../hooks';
+import { normalizeError } from '../../utils/reporting';
+
+export type NewMember = {
+  address: string;
+  name: string;
+};
 
 const AddMembersPage = () => {
   // const { isMobile } = useMobileDetect();
@@ -50,140 +58,165 @@ const AddMembersPage = () => {
   const magicLink = 'https://app.coordinape.com/join/' + magicLinkUuid;
   const welcomeLink = 'https://app.coordinape.com/welcome/' + welcomeUuid;
 
-  const enum Tab {
-    ETH,
-    CSV,
-    LINK,
-  }
-
-  const AddMembersContents = () => {
-    const [currentTab, setCurrentTab] = useState<Tab>(Tab.ETH);
-
-    const TabButton = ({
-      tab,
-      children,
-    }: {
-      tab: Tab;
-      children: ReactNode;
-    }) => {
-      return (
-        <Button
-          color={currentTab === tab ? 'secondary' : undefined}
-          // outlined={currentTab == tab ? undefined : true}
-          css={{ borderRadius: '$pill', mr: '$md' }}
-          onClick={() => setCurrentTab(tab)}
-        >
-          {children}
-        </Button>
-      );
-    };
-
-    return (
-      <SingleColumnLayout>
-        <Panel>
-          <Flex css={{ alignItems: 'center', mb: '$sm' }}>
-            <Text h1 css={{ my: '$xl' }}>
-              Add Member to {circle.name}
-            </Text>
-          </Flex>
-          <Flex>
-            <TabButton tab={Tab.ETH}>ETH Address</TabButton>
-            <TabButton tab={Tab.CSV}>CSV Import</TabButton>
-            <TabButton tab={Tab.LINK}>Join Link</TabButton>
-          </Flex>
-          {currentTab === Tab.ETH && (
-            <Box>
-              <Box>Eth addr</Box>
-              <Box>
-                <EthAndNameEntry />
-                <EthAndNameEntry />
-                <EthAndNameEntry />
-                <EthAndNameEntry />
-              </Box>
-              <Box>
-                <div>
-                  WelcomeLink
-                  <CopyCodeTextField value={welcomeLink} />
-                  <Button onClick={revokeWelcome}>refr</Button>
-                </div>
-              </Box>
-            </Box>
-          )}
-          {currentTab === Tab.CSV && (
-            <Box>
-              <Box>CSV Import</Box>
-              <Box>
-                <div>
-                  WelcomeLink
-                  <CopyCodeTextField value={welcomeLink} />
-                  <Button onClick={revokeWelcome}>refr</Button>
-                </div>
-              </Box>
-            </Box>
-          )}
-          {currentTab === Tab.LINK && (
-            <>
-              <div>
-                MagicLink
-                <CopyCodeTextField value={magicLink} />
-                <Button onClick={revokeMagic}>refr</Button>
-              </div>
-            </>
-          )}
-        </Panel>
-      </SingleColumnLayout>
-    );
-  };
-
-  return <AddMembersContents />;
-};
-
-const EthAndNameEntry = () => {
-  // TODO: add zod validation and react form hook stuff??
   return (
-    <Flex>
-      <Box>
-        <Text variant={'label'}>ETH Address</Text>
-        <TextField placeholder="ETH Address or ENS" />
-      </Box>
-      <Box>
-        <Text variant={'label'}>Name</Text>
-        <TextField placeholder="Name" />
-      </Box>
-    </Flex>
+    <AddMembersContents
+      circle={circle}
+      welcomeLink={welcomeLink}
+      magicLink={magicLink}
+      revokeMagic={revokeMagic}
+      revokeWelcome={revokeWelcome}
+    />
   );
 };
 
-// TODO: move this into components? Generally useful?
-const CopyCodeTextField = ({ value }: { value: string }) => {
-  const { apeInfo } = useApeSnackbar();
+const AddMembersContents = ({
+  circle,
+  welcomeLink,
+  magicLink,
+  revokeMagic,
+  revokeWelcome,
+}: {
+  circle: ICircle;
+  welcomeLink: string;
+  magicLink: string;
+  revokeMagic(): void;
+  revokeWelcome(): void;
+}) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [currentTab, setCurrentTab] = useState<Tab>(Tab.ETH);
+  const [newMembers, setNewMembers] = useState<NewMember[]>([
+    {
+      address: '',
+      name: '',
+    },
+  ]);
 
-  const copyToClip = () => {
-    copy(value);
-    apeInfo('Copied to clipboard');
+  const [success, setSuccess] = useState<boolean>(false);
+
+  const { showError } = useApeSnackbar();
+  const submitNewMembers = async () => {
+    try {
+      setLoading(true);
+      await client.mutate({
+        createUsers: [
+          {
+            payload: {
+              circle_id: circle.id,
+              users: newMembers.filter(m => m.address != '' && m.name != ''),
+            },
+          },
+          {
+            __typename: true,
+          },
+        ],
+      });
+      // ok it worked, clear out?
+      setSuccess(true);
+    } catch (e) {
+      showError(normalizeError(e));
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const [submittable, setSubmittable] = useState<boolean>(false);
+
+  useEffect(() => {
+    for (const m of newMembers) {
+      if (m.name !== '' && m.address !== '') {
+        // at least one good entry
+        setSubmittable(true);
+        return;
+      }
+    }
+    setSubmittable(false);
+  }, [newMembers]);
+
   return (
-    <Flex>
-      <TextField
-        inPanel
-        value={value}
-        readOnly={true}
-        onClick={copyToClip}
-        css={{
-          flexGrow: 1,
-          cursor: 'pointer',
-          width: 'auto',
-          height: '$xl',
-          fontSize: '$small',
-          textAlign: 'left',
-          pl: '$sm',
-        }}
-      />
-      <Button color={'transparent'} css={{ ml: '$sm' }} onClick={copyToClip}>
-        <ExternalLinkIcon color={'neutral'} size={'md'} />
-      </Button>
-    </Flex>
+    <SingleColumnLayout>
+      {loading && <LoadingModal visible={true} />}
+      <Panel>
+        <Flex css={{ alignItems: 'center', mb: '$sm' }}>
+          <Text h1 css={{ my: '$xl' }}>
+            Add Members to {circle.name}
+          </Text>
+        </Flex>
+        <Flex css={{ mb: '$xl' }}>
+          <TabButton
+            tab={Tab.ETH}
+            currentTab={currentTab}
+            setCurrentTab={setCurrentTab}
+          >
+            ETH Address
+          </TabButton>
+          <TabButton
+            tab={Tab.CSV}
+            currentTab={currentTab}
+            setCurrentTab={setCurrentTab}
+          >
+            CSV Import
+          </TabButton>
+          <TabButton
+            tab={Tab.LINK}
+            currentTab={currentTab}
+            setCurrentTab={setCurrentTab}
+          >
+            Join Link
+          </TabButton>
+        </Flex>
+        {currentTab === Tab.ETH && (
+          <Box>
+            <NewMemberList
+              newMembers={newMembers}
+              setNewMembers={setNewMembers}
+            />
+            {success && (
+              <Box>
+                <div>
+                  WelcomeLink
+                  <CopyCodeTextField value={welcomeLink} />
+                  <Button onClick={revokeWelcome}>refr</Button>
+                </div>
+              </Box>
+            )}
+            {!success && (
+              <Box>
+                <Button
+                  disabled={!submittable || loading}
+                  color="primary"
+                  size="large"
+                  fullWidth
+                  onClick={submitNewMembers}
+                >
+                  Add Members
+                </Button>
+              </Box>
+            )}
+          </Box>
+        )}
+        {currentTab === Tab.CSV && (
+          <Box>
+            <Box>CSV Import</Box>
+            <Box>
+              <div>
+                WelcomeLink
+                <CopyCodeTextField value={welcomeLink} />
+                <Button onClick={revokeWelcome}>refr</Button>
+              </div>
+            </Box>
+          </Box>
+        )}
+        {currentTab === Tab.LINK && (
+          <>
+            <div>
+              MagicLink
+              <CopyCodeTextField value={magicLink} />
+              <Button onClick={revokeMagic}>refr</Button>
+            </div>
+          </>
+        )}
+      </Panel>
+    </SingleColumnLayout>
   );
 };
 
